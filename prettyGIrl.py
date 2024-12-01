@@ -1,17 +1,14 @@
 
-from PyQt5.QtWidgets import QWidget,QLabel, QLineEdit, QPushButton, QVBoxLayout, QApplication, QSpacerItem, QSizePolicy, QFrame, QHBoxLayout, QScrollArea, QStackedWidget
+from PyQt5.QtWidgets import QWidget,QLabel, QLineEdit, QPushButton, QVBoxLayout, QApplication, QSpacerItem, QSizePolicy, QFrame, QHBoxLayout, QScrollArea, QStackedWidget, QLayout
 from PyQt5.QtCore import Qt
 import time
 import sys
 
-# Top StyleSheet 해결하기 
-# 반복되는 구조 간결하게 고치기
+# 반복되는 구조 간결하게 고치기 [12.2 해결]
 
-class LoginWidget(QWidget):
+class login_widget(QWidget):
     def __init__(self):
         super().__init__()
-
-        self.logic_widget = Logic_widget(self)
 
         self.setStyleSheet("""
             #voca {
@@ -34,181 +31,182 @@ class LoginWidget(QWidget):
             }
         """)
 
-        UserWidgets = QVBoxLayout()
-        PassWidgets = QVBoxLayout()
-        AvailableWidgets = QVBoxLayout()
-        MainLayout = QVBoxLayout()
+        user_widgets = QVBoxLayout()
+        pass_widgets = QVBoxLayout()
+        available_widgets = QVBoxLayout()
+        main_layout = QVBoxLayout()
 
         self.setFixedSize(300,400)
         self.setObjectName("background")
 
-        MainLabel = QLabel("Voca")
-        MainLabel.setObjectName("voca")
+        main_label = QLabel("Voca")
+        main_label.setObjectName("voca")
 
-        UserName = QLineEdit(self)
-        UserName.setPlaceholderText("UserName")
+        username = QLineEdit(self)
+        username.setPlaceholderText("UserName")
 
-        Password = QLineEdit(self)
-        Password.setPlaceholderText("Password")
-        Password.setEchoMode(QLineEdit.Password)
+        password = QLineEdit(self)
+        password.setPlaceholderText("Password")
+        password.setEchoMode(QLineEdit.Password)
 
-        ForgetUser = QLabel("Foreget username?")
-        ForgetUser.mousePressEvent = self.StupidUser
-        ForgetUser.setObjectName("Forget")
+        forget_user = QLabel("Foreget username?")
+        forget_user.mousePressEvent = self.stupid_user
+        forget_user.setObjectName("Forget")
 
-        ForgetPass = QLabel("Forget password?")
-        ForgetPass.mousePressEvent = self.StupidUser
-        ForgetPass.setObjectName("Forget")
+        forget_pass = QLabel("Forget password?")
+        forget_pass.mousePressEvent = self.stupid_user
+        forget_pass.setObjectName("Forget")
 
-        SignInButton = QPushButton("Sign In", self)
-        SignInButton.setFixedSize(150,30)
-        SignInButton.clicked.connect(self.on_sign_in)
+        sumbit_button = QPushButton("Sign In", self)
+        sumbit_button.setFixedSize(150,30)
+        sumbit_button.clicked.connect(self.was_sumbited)
 
-        UserWidgets.addWidget(UserName)
-        UserWidgets.addWidget(ForgetUser)
+        user_widgets.addWidget(username)
+        user_widgets.addWidget(forget_user)
 
-        PassWidgets.addWidget(Password)
-        PassWidgets.addWidget(ForgetPass)
+        pass_widgets.addWidget(password)
+        pass_widgets.addWidget(forget_pass)
 
-        AvailableWidgets.addLayout(UserWidgets)
-        AvailableWidgets.addLayout(PassWidgets)
+        available_widgets.addLayout(user_widgets)
+        available_widgets.addLayout(pass_widgets)
 
-        MainLayout.addSpacerItem(QSpacerItem(0,20, QSizePolicy.Minimum, QSizePolicy.Fixed))
-        MainLayout.addWidget(MainLabel)
-        MainLayout.addSpacerItem(QSpacerItem(0,30, QSizePolicy.Minimum, QSizePolicy.Fixed))
-        MainLayout.addLayout(AvailableWidgets)
-        MainLayout.addWidget(SignInButton, alignment=Qt.AlignCenter)
-        MainLayout.addStretch(1)
+        main_layout.addSpacerItem(QSpacerItem(0,20, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        main_layout.addWidget(main_label)
+        main_layout.addSpacerItem(QSpacerItem(0,30, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        main_layout.addLayout(available_widgets)
+        main_layout.addWidget(sumbit_button, alignment=Qt.AlignCenter)
+        main_layout.addStretch(1)
 
-        self.setLayout(MainLayout)
+        self.setLayout(main_layout)
 
 
-    def StupidUser(self, event):
+    def stupid_user(self, event):
         print("*The username and password can be anything*")
 
-    def on_sign_in(self):
-        self.logic_widget.Constant = 1
-        self.logic_widget.process_logic()
+    def was_sumbited(self, event):
+        parent_widget = self.parent()
 
+        if isinstance(parent_widget, QStackedWidget):
+            parent_widget.setCurrentIndex(1)
+        else:
+            print("orphanage")
 
-class LobbyWidget(QWidget):
+class lobby_widget(QWidget):
     def __init__(self):
         super().__init__()
 
         self.setFixedSize(300,400)
 
-        TopFrame = QFrame(self)
-        TopFrame.setFrameStyle(QFrame.Box)
-        TopFrame.setFixedSize(300,100)
-        TopFrame.setObjectName("Top")
+        top_frame = QFrame(self)
+        top_frame.setFixedSize(300,80)
+        top_frame.setObjectName("top")
 
-        GreetingLabel = QLabel("Welcome!")
-        GreetingLabel.setFixedSize(300,50)
-        GreetingLabel.setObjectName("Greeting")
+        middle_frame = QFrame(self)
+        middle_frame.setFixedSize(300,40)
+        middle_frame.setObjectName("middle")
 
-        CreateButton = QPushButton("Create", TopFrame)
-        CreateButton.clicked.connect(self.CreateVoca)
-        CreateButton.setFixedSize(80,20)
-        CreateButton.setObjectName("Button")
+        bottom_frame = QScrollArea(self)
+        bottom_frame.setFixedSize(300,280)
+        bottom_frame.setObjectName("bottom")
 
-        DeleteButton = QPushButton("Delete", TopFrame)
-        DeleteButton.clicked.connect(self.DeleteVoca)
-        DeleteButton.setFixedSize(80,20)
-        DeleteButton.setObjectName("Button")
+        main_label = QLabel("Wataya", top_frame)
+        main_label.setObjectName("voca-label")
 
-        LoadVocaButton = QPushButton("Load", TopFrame)
-        LoadVocaButton.clicked.connect(self.LoadVoca)
-        LoadVocaButton.setFixedSize(100,20)
-        LoadVocaButton.setObjectName("Button")
+        create_voca = self.create_button("create", 80, 20, self.create_voca, middle_frame)
+        delete_voca = self.create_button("delete", 80, 20, self.delete_voca, middle_frame)
+        load_voca = self.create_button("load", 100, 20, self.load_voca, middle_frame)
 
-        ScrollArea = QScrollArea(self)
-        ScrollArea.setStyleSheet("background-color : #FFFFFF;")
-        ScrollArea.setWidgetResizable(False)
-        ScrollArea.setFixedSize(300,300)
+        button_layout = QHBoxLayout(middle_frame)
+        button_layout.addWidget(create_voca)
+        button_layout.addWidget(delete_voca)
+        button_layout.addWidget(load_voca)
+        button_layout.setContentsMargins(5,0,0,0)
 
-        FrameLayouts = QVBoxLayout()
-        topWidgetLayout = QVBoxLayout(TopFrame)
-        connectButtons = QHBoxLayout()
-
-        connectButtons.addWidget(CreateButton)
-        connectButtons.addWidget(DeleteButton)
-        connectButtons.addWidget(LoadVocaButton)
-        connectButtons.setContentsMargins(0,0,0,0)
-        connectButtons.setSpacing(5)
-
-        topWidgetLayout.addWidget(GreetingLabel)
-        topWidgetLayout.addLayout(connectButtons)
-
-        FrameLayouts.addWidget(TopFrame)
-        FrameLayouts.addWidget(ScrollArea)
-        FrameLayouts.setContentsMargins(0,0,0,0)
-        FrameLayouts.setSpacing(0)
+        frame_layout = QVBoxLayout(self)
+        frame_layout.addWidget(top_frame)
+        frame_layout.addWidget(middle_frame)
+        frame_layout.addWidget(bottom_frame)
+        frame_layout.setContentsMargins(0,0,0,0)
+        frame_layout.setSpacing(0)
 
         self.setStyleSheet("""
-            #Top {
-                background-color : #33FF33;
-                border : 0px;       
+            #top { 
+                background-color : #FFFFFF;
+                border : 0px;
+            }  
+            #middle { 
+                background-color : #FFFFFF;            
+                border-top : 1px solid #E0E0E0;
+                border-bottom : 1px solid #F2F2F2;
             }
-            #Greeting {
-                color : #FFFFFF;
-                font : bold 50px;  
+            #bottom { 
+                background-color : #FFFFFF;   
+                border : 0px;     
+            }
+            #voca-label { 
+                color : #33FF33;
+                font-size : 50px;
+                font-weight : bold;
                 margin-left : 5px;
-            }
-            #Label {
-                color : #E8E8E8; 
-                font : italic;
-                font-weight : 600
-            }
-            #TouchedLabel {
-                color : #4D4DFF;
-                font : bold 15px;
-                           }
-            #TouchedLabel:hover {
-                color : #FFFFFF
-            }
-            #Button {
-                background-color : #2542FF;
-                border-radius : 10px;
-                font : 13px;
-            }
-            #Button:hover {
-                background-color : #FF9900;
+                margin-top : 5px;
             }
         """)
 
-        self.setLayout(FrameLayouts)
+    def create_button(self, title ,width, height, connectEvent, parent):
+        button = QPushButton(title, parent)
+        button.setFixedSize(width, height)
+        button.clicked.connect(connectEvent)
+        button.setStyleSheet("""
+            QPushButton {
+                background-color : #FFFFFF;
+                color : #DBDBDB;
+                border-radius : 10px;
+                border : 1px solid #F2F2F2;
+                font : bold;
+            }
+            QPushButton:hover {
+                color : #222222;    
+            }
+        """)
 
-    def CreateVoca(self, event):
-        pass
-
-    def DeleteVoca(self, event):
-        pass
-
-    def LoadVoca(self, event):
-        pass
+        return button
+    
+    def create_voca(self, event):
+        print("was created")
 
 
-class Logic_widget():
-    def __init__(self, parent_widget):
-        self.parent_widget = parent_widget
-        self.Constant = 0
-        self.login_widget = parent_widget
-        self.lobby_widget = None
+    def delete_voca(self, event):
+        print("was deleted")
 
-    def process_logic(self):
-        if self.Constant == 0:
-            if self.lobby_widget:
-                self.lobby_widget.close()
-            self.login_widget.show()
-        
-        if self.Constant == 1:
-            self.login_widget.close()
-            if not self.lobby_widget:
-                self.lobby_widget = LobbyWidget()
-            self.lobby_widget.show()
+    def load_voca(self, event):
+        print("was loaded")
 
+class widget_controller(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setFixedSize(300,400)
+
+        self.stack_wideget = QStackedWidget(self)
+        self.stack_wideget.setContentsMargins(0,0,0,0)
+        self.stack_wideget.setStyleSheet("background-color : #FFFFFF;")
+
+        Login_widget = login_widget()
+        Lobby_widget = lobby_widget()
+
+        self.stack_wideget.addWidget(Login_widget)
+        self.stack_wideget.addWidget(Lobby_widget)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0,0,0,0)
+        layout.addWidget(self.stack_wideget)
+        self.setLayout(layout)
+
+        self.stack_wideget.setCurrentIndex(0)
 
 app = QApplication([])
-window = LoginWidget()
+
+window = widget_controller()
 window.show()
+
 app.exec_()
